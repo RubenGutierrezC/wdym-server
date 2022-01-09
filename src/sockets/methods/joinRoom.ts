@@ -1,20 +1,31 @@
-import { SocketMethodProps } from '../../interfaces/globlal';
+import { SocketMethodProps } from '../../interfaces/globlal'
+import {
+  SocketResponse,
+  socketOkReponse,
+  socketErrorResponse
+} from '../socketHelpers'
 
-export interface JoinRoomProps {
-  code: string;
-  username: string;
-  socketRooms: Map<string, Set<string>> | []
+interface JoinRoomProps {
+  code: string
+  username: string
 }
 
-export interface JoinRoomResponse {
-  msg: string
+type JoinRoomResponse = SocketResponse<{
+  message: string
+} | null>
+
+interface JoinRoomAditionaProps {
+  rooms: Map<string, Set<string>> | any
 }
 
-export const joinRoom = async (props: SocketMethodProps<JoinRoomProps, JoinRoomResponse>) => {
-  const {  data, cb, socket} = props
+export const joinRoom = async (
+  props: SocketMethodProps<null, JoinRoomResponse, JoinRoomAditionaProps>
+) => {
+  const { cb, socket, rooms } = props
+
+  console.log(rooms)
 
   try {
-    
     //   const availablesRooms = Array.from(app.io.sockets.adapter.rooms)
 
     //   const roomExist = availablesRooms.findIndex(el => el[0] === `room-${code}`) > -1
@@ -46,13 +57,13 @@ export const joinRoom = async (props: SocketMethodProps<JoinRoomProps, JoinRoomR
     //       participants = rooms[roomCode].participants || []
     //     }
 
-    //     cb({
-    //       msg: 'ok',
-    //       participants
-    //     })
-
+    cb &&
+      cb(
+        socketOkReponse({
+          message: 'ok'
+        })
+      )
   } catch (error) {
-    console.log(error)
+    cb && cb(socketErrorResponse(error))
   }
-
 }
