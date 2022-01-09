@@ -2,9 +2,11 @@ import { fastify } from 'fastify'
 import fastifyIO from "fastify-socket.io";
 import middie from 'middie'
 import cors from 'cors'
-import helmet from 'helmet'
+import helmet from 'fastify-helmet'
+import {contentParser } from 'fastify-multer'
 import { App } from './interfaces/globlal';
 import { initSocket } from './sockets/index';
+import memeRoutes from './components/memes/memesRoutes';
 
 const app: App = fastify({
   logger: true
@@ -13,7 +15,6 @@ const app: App = fastify({
 const subsystem = async (app: App) => {
   await app.register(middie)
   app.use(cors())
-  app.use(helmet())
 }
 
 app.register(subsystem)
@@ -22,10 +23,12 @@ app.register(fastifyIO, {
     origin: '*'
   }
 })
+app.register(contentParser)
+app.register(helmet)
 
-let rooms = {
+//routes
+app.register(memeRoutes, {  prefix: '/v1/meme' })
 
-}
 
 app.ready().then(() => initSocket(app))
 

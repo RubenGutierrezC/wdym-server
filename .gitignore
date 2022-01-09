@@ -67,7 +67,7 @@ typings/
 
 # Output of 'npm pack'
 *.tgz
-
+wdym-config.json
 # Yarn Integrity file
 .yarn-integrity
 
