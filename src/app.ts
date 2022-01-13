@@ -1,12 +1,12 @@
 import { fastify } from 'fastify'
-import fastifyIO from "fastify-socket.io";
+import fastifyIO from 'fastify-socket.io'
 import middie from 'middie'
 import cors from 'cors'
 import helmet from 'fastify-helmet'
-import {contentParser } from 'fastify-multer'
-import { App } from './interfaces/globlal';
-import { initSocket } from './sockets/index';
-import memeRoutes from './components/memes/memesRoutes';
+import { contentParser } from 'fastify-multer'
+import { App } from './interfaces/globlal'
+import { initSocket } from './sockets/index'
+import memeRoutes from './components/memes/memeRoutes'
 
 const app: App = fastify({
   logger: true
@@ -27,8 +27,7 @@ app.register(contentParser)
 app.register(helmet)
 
 //routes
-app.register(memeRoutes, {  prefix: '/v1/meme' })
-
+app.register(memeRoutes, { prefix: '/v1/meme' })
 
 app.ready().then(() => initSocket(app))
 
