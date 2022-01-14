@@ -1,4 +1,7 @@
+import { Server } from 'socket.io'
 import { SocketMethodProps } from '../../interfaces/globlal'
+import { addParticipantToRoom } from '../rooms'
+import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import {
   SocketResponse,
   socketOkReponse,
@@ -11,56 +14,42 @@ interface JoinRoomProps {
 }
 
 type JoinRoomResponse = SocketResponse<{
-  message: string
+  roomCode: string
 } | null>
 
 interface JoinRoomAditionaProps {
-  rooms: Map<string, Set<string>> | any
+  rooms: Map<string, Set<string>> | undefined
+  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 }
 
 export const joinRoom = async (
-  props: SocketMethodProps<null, JoinRoomResponse, JoinRoomAditionaProps>
+  props: SocketMethodProps<
+    JoinRoomProps,
+    JoinRoomResponse,
+    JoinRoomAditionaProps
+  >
 ) => {
-  const { cb, socket, rooms } = props
-
-  console.log(rooms)
-
+  const { data, cb, socket, rooms, io } = props
   try {
-    //   const availablesRooms = Array.from(app.io.sockets.adapter.rooms)
+    if (rooms?.size === 0 || !rooms?.has(`room-${data.code}`)) {
+      return cb && cb(socketErrorResponse('Room not found'))
+    }
 
-    //   const roomExist = availablesRooms.findIndex(el => el[0] === `room-${code}`) > -1
+    socket?.join(`room-${data.code}`)
+    addParticipantToRoom({
+      username: data.username,
+      roomCode: data.code,
+      socketId: socket?.id || ''
+    })
 
-    //   if (roomExist) {
-    //     socket.join(`room-${code}`)
-    //     rooms[code].participants?.push({
-    //       username,
-    //       isRoomCreator: false,
-    //       numberOfWinnings: 0,
-    //       socketId: socket.id
-    //     })
-    //   }
-
-    //   cb({
-    //     msg: 'ok'
-    //   })
-    // })
-
-    // socket.on('get-participants-in-waiting-rooms', ({ roomCode }, cb) => {
-    //   try {
-
-    //     const availablesRooms = Array.from(app.io.sockets.adapter.rooms)
-    //     const roomExist = availablesRooms.findIndex(el => el[0] === `room-${roomCode}`) > -1
-
-    //     let participants = []
-
-    //     if (roomExist) {
-    //       participants = rooms[roomCode].participants || []
-    //     }
+    io?.to(`room-${data.code}`).emit('participant-joined', {
+      username: data.username
+    })
 
     cb &&
       cb(
         socketOkReponse({
-          message: 'ok'
+          roomCode: data.code
         })
       )
   } catch (error) {

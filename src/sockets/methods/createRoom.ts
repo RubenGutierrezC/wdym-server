@@ -1,6 +1,6 @@
 import { SocketMethodProps } from '../../interfaces/globlal'
 import { nanoid } from 'nanoid'
-import roomRepository from '../../components/rooms/roomRepository'
+import { generateRoom } from '../rooms'
 import {
   SocketResponse,
   socketOkReponse,
@@ -27,28 +27,13 @@ export const createRoom = async (
   try {
     const roomCode = await nanoid(6)
 
-    const r = await roomRepository.createRoom({
+    socket?.join(`room-${roomCode}`)
+
+    generateRoom({
       username: data.username,
-      code: roomCode
+      roomCode,
+      socketId: socket?.id || ''
     })
-
-    // await roomRepository.createRoom({
-    //   username,
-    //   code: roomCode
-    // })
-
-    // socket?.join(`room-${roomCode}`)
-
-    // rooms[roomCode] = {
-    //   participants: [
-    //     {
-    //       username,
-    //       isRoomCreator: true,
-    //       numberOfWinnings: 0,
-    //       socketId: socket.id
-    //     }
-    //   ]
-    // }
 
     cb && cb(socketOkReponse({ roomCode }))
   } catch (error) {
