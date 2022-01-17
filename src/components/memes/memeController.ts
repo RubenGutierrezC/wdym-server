@@ -6,7 +6,6 @@ const postMeme = async (req: any, reply: any) => {
     if (req.files.length > 0) {
       let meme = Array.from(req.files, (item: any) => item.url)
 
-      // let data: Array<MemeModel> = []
       meme.forEach(async (m: string) => {
         const elmeme: MemeModel = {
           img: m,

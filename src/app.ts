@@ -7,6 +7,7 @@ import { contentParser } from 'fastify-multer'
 import { App } from './interfaces/globlal'
 import { initSocket } from './sockets/index'
 import memeRoutes from './components/memes/memeRoutes'
+import phraseRoutes from './components/phrases/phraseRoutes'
 
 const app: App = fastify({
   logger: true
@@ -28,6 +29,7 @@ app.register(helmet)
 
 //routes
 app.register(memeRoutes, { prefix: '/v1/meme' })
+app.register(phraseRoutes, { prefix: '/v1/phrase' })
 
 app.ready().then(() => initSocket(app))
 
