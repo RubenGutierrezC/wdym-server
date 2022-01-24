@@ -1,21 +1,21 @@
-//Model interface 
-interface Participants {
+//Model interface
+export interface Participants {
   username: string
   isRoomCreator: boolean
   numberOfWinnings: number
 }
 
 interface Round {
-  number: number;
-  mainCard: string;
-  winingUser: string;
-  cards: {username: string; card: string}[]
+  number: number
+  mainCard: string
+  winingUser: string
+  cards: { username: string; card: string }[]
 }
 
 export interface RoomModel {
-  code: string;
-  totalRounds: number;
-  mathematicalWinCondition: number;
+  code: string
+  totalRounds: number
+  mathematicalWinCondition: number
   participants: Participants[]
   winningPariticipant: string
   rounds: Round[]
@@ -23,6 +23,6 @@ export interface RoomModel {
 
 // Repositories
 export interface CreateRoomRepositoryProps {
-  code: string,
+  code: string
   username: string
 }

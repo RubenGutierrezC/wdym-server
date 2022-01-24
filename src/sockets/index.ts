@@ -1,5 +1,17 @@
+import { MemeModel } from '../components/memes/meme-interface'
+import memeRepository from '../components/memes/memeRepository'
+import { PhraseModel } from '../components/phrases/phrase-interface'
+import phraseRepository from '../components/phrases/phraseRepository'
 import { App, SocketConnected } from '../interfaces/globlal'
 import { createRoom, joinRoom } from './methods'
+
+export let memes: Array<MemeModel>
+export let phrases: Array<PhraseModel>
+
+export const initialize = async () => {
+  memes = await memeRepository.findMemes()
+  phrases = await phraseRepository.findPhrases()
+}
 
 export const initSocket = (app: App) => {
   app.io?.on('connection', (socket: SocketConnected) => {
