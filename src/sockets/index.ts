@@ -4,6 +4,7 @@ import { PhraseModel } from '../components/phrases/phrase-interface'
 import phraseRepository from '../components/phrases/phraseRepository'
 import { App, SocketConnected } from '../interfaces/globlal'
 import { createRoom, joinRoom } from './methods'
+import { getParticipantsInRoom } from './methods/getParcititpantsInRoom'
 
 export let memes: Array<MemeModel>
 export let phrases: Array<PhraseModel>
@@ -22,14 +23,21 @@ export const initSocket = (app: App) => {
     )
 
     socket.on('join-room', (data: any, cb: any) => {
-      console.log(app?.io?.sockets?.adapter?.rooms)
-
       joinRoom({
         data,
         cb,
         socket,
         rooms: app?.io?.sockets?.adapter?.rooms,
         io: app?.io
+      })
+    })
+
+    socket.on('get-participants-in-room', (data: any, cb: any) => {
+      getParticipantsInRoom({
+        data,
+        cb,
+        socket,
+        rooms: app?.io?.sockets?.adapter?.rooms
       })
     })
   })
