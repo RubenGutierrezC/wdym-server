@@ -4,7 +4,7 @@ import {
   socketOkReponse
 } from '../socketHelpers'
 import { SocketMethodProps } from '../../interfaces/globlal'
-import { rooms as inMemoryRooms } from '../rooms'
+import { rooms as inMemoryRooms, findRoomByCode } from '../rooms'
 
 interface getParticipantsInRoomProps {
   code: string
@@ -18,26 +18,19 @@ type getParticipantsInRoomResponse = SocketResponse<{
   }[]
 } | null>
 
-interface getParticipantsInRoomAditionaProps {
-  rooms: Map<string, Set<string>> | undefined
-}
-
 export const getParticipantsInRoom = async (
   props: SocketMethodProps<
     getParticipantsInRoomProps,
-    getParticipantsInRoomResponse,
-    getParticipantsInRoomAditionaProps
+    getParticipantsInRoomResponse
   >
 ) => {
-  const { data, cb, socket, rooms } = props
+  const { data, cb } = props
   try {
-    if (rooms?.size === 0 || !rooms?.has(`room-${data.code}`)) {
+    const room = await findRoomByCode(data.code)
+
+    if (!room) {
       return cb && cb(socketErrorResponse('Room not found'))
     }
-
-    const room = inMemoryRooms[data.code]
-
-    console.log('get-p', room)
 
     cb &&
       cb(

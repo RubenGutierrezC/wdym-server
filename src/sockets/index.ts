@@ -35,8 +35,7 @@ export const initSocket = (app: App) => {
       getParticipantsInRoom({
         data,
         cb,
-        socket,
-        rooms: app?.io?.sockets?.adapter?.rooms
+        socket
       })
     })
   })

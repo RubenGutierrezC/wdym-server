@@ -1,8 +1,7 @@
 import { Server } from 'socket.io'
 import { SocketMethodProps } from '../../interfaces/globlal'
-import { addParticipantToRoom } from '../rooms'
+import { addParticipantToRoom, findRoomByCode } from '../rooms'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { redisClient } from '../../services/redis'
 import {
   SocketResponse,
   socketOkReponse,
@@ -31,7 +30,7 @@ export const joinRoom = async (
 ) => {
   const { data, cb, socket, io } = props
   try {
-    const room = await redisClient.json.get(data.code)
+    const room = await findRoomByCode(data.code)
 
     if (!room) {
       return cb && cb(socketErrorResponse('Room not found'))
@@ -56,6 +55,7 @@ export const joinRoom = async (
         })
       )
   } catch (error) {
+    console.log(error)
     cb && cb(socketErrorResponse(error))
   }
 }

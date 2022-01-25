@@ -45,12 +45,12 @@ export const addParticipantToRoom = async ({
 }: GenerateRoomProps): Promise<void> => {
   await redisClient.json.arrAppend(`room-${roomCode}`, '.participants', {
     username,
-    isRoomCreator: true,
+    isRoomCreator: false,
     numberOfWinnings: 0,
     socketId: socketId
   })
 
-  rooms[roomCode].participants.push({
+  rooms[roomCode]?.participants.push({
     username,
     isRoomCreator: false,
     numberOfWinnings: 0,
@@ -58,4 +58,8 @@ export const addParticipantToRoom = async ({
   })
 
   console.log('room join', rooms)
+}
+
+export const findRoomByCode = async (roomCode: string): Promise<any | null> => {
+  return redisClient.json.get(`room-${roomCode}`)
 }
