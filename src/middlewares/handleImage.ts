@@ -1,7 +1,7 @@
 import sharp from 'sharp'
 import path from 'path'
 import { Storage } from '@google-cloud/storage'
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'
 
 const storage = new Storage({
   projectId: 'wdym-142f1',
@@ -10,13 +10,11 @@ const storage = new Storage({
 
 const bucket = storage.bucket('wdym-142f1.appspot.com')
 
-
 export const resizeImages = (request: any, reply: any, done: any) => {
   try {
     const files = request.files || []
 
     if (files.length > 0) {
-
       const file = files[0]
 
       sharp(file?.buffer)
@@ -26,15 +24,15 @@ export const resizeImages = (request: any, reply: any, done: any) => {
         })
         .toFormat('webp')
         .toBuffer()
-        .then(data => {
+        .then((data) => {
+          request.files[0].mimetype = 'image/webp'
           request.files[0].buffer = data
           done()
         })
-        .catch(error => {
-          console.log('erro sharp', error); 
+        .catch((error) => {
+          console.log('erro sharp', error)
           reply.send(error)
         })
-
     } else {
       done()
     }
@@ -43,18 +41,18 @@ export const resizeImages = (request: any, reply: any, done: any) => {
   }
 }
 
-export const uploadImagesToGCS = async (request: any, reply: any, done: any) => {
-  console.log(request.files)
-
+export const uploadImagesToGCS = async (
+  request: any,
+  reply: any,
+  done: any
+) => {
   if (request.files?.length === 0) return done()
 
   let promises = []
 
   try {
-    
-    for (const [index, image] of request.files.entries()) {
-
-      const gcsname = nanoid() + path.extname(image.originalname).toLocaleLowerCase()
+    for (const [index, image] of request?.files?.entries()) {
+      const gcsname = nanoid() + '.webp'
 
       const file = bucket.file(gcsname)
 
@@ -72,33 +70,25 @@ export const uploadImagesToGCS = async (request: any, reply: any, done: any) => 
 
       stream.end(image.buffer)
 
-
       promises.push(
         new Promise((resolve, reject) => {
           stream.on('finish', () => {
-            console.log('iteracion')
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`
 
-            const publicUrl = 
-              `https://storage.googleapis.com/${bucket.name}/${file.name}`
-            
             request.files[index].url = publicUrl
 
             bucket
               .file(gcsname)
               .makePublic()
               .then(() => resolve(''))
-
           })
         })
       )
-
     }
 
     await Promise.all(promises)
     done()
-
   } catch (error) {
     console.log('error upload', error)
   }
-
 }

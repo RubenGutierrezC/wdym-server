@@ -3,8 +3,12 @@ import memeRepository from '../components/memes/memeRepository'
 import { PhraseModel } from '../components/phrases/phrase-interface'
 import phraseRepository from '../components/phrases/phraseRepository'
 import { App, SocketConnected } from '../interfaces/globlal'
-import { createRoom, joinRoom } from './methods'
-import { getParticipantsInRoom } from './methods/getParcititpantsInRoom'
+import {
+  createRoom,
+  joinRoom,
+  getParticipantsInRoom,
+  startGame
+} from './methods'
 
 export let memes: Array<MemeModel>
 export let phrases: Array<PhraseModel>
@@ -33,6 +37,14 @@ export const initSocket = (app: App) => {
 
     socket.on('get-participants-in-room', (data: any, cb: any) => {
       getParticipantsInRoom({
+        data,
+        cb,
+        socket
+      })
+    })
+
+    socket.on('start-game', (data: any, cb: any) => {
+      startGame({
         data,
         cb,
         socket
