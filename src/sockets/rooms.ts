@@ -1,3 +1,4 @@
+import { redisClient } from '../services/redis'
 export const rooms: { [key: string]: any } = {}
 
 // TODO: change interface name
@@ -7,11 +8,22 @@ interface GenerateRoomProps {
   socketId: string
 }
 
-export const generateRoom = ({
+export const generateRoom = async ({
   username,
   roomCode,
   socketId
-}: GenerateRoomProps): void => {
+}: GenerateRoomProps): Promise<void> => {
+  await redisClient.json.set(`room-${roomCode}`, '.', {
+    participants: [
+      {
+        username,
+        isRoomCreator: true,
+        numberOfWinnings: 0,
+        socketId: socketId
+      }
+    ]
+  })
+
   rooms[roomCode] = {
     participants: [
       {
@@ -26,11 +38,18 @@ export const generateRoom = ({
   console.log('room generated', rooms)
 }
 
-export const addParticipantToRoom = ({
+export const addParticipantToRoom = async ({
   username,
   roomCode,
   socketId
-}: GenerateRoomProps): void => {
+}: GenerateRoomProps): Promise<void> => {
+  await redisClient.json.arrAppend(`room-${roomCode}`, '.participants', {
+    username,
+    isRoomCreator: true,
+    numberOfWinnings: 0,
+    socketId: socketId
+  })
+
   rooms[roomCode].participants.push({
     username,
     isRoomCreator: false,

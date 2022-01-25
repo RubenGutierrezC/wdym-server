@@ -29,7 +29,7 @@ export const createRoom = async (
 
     socket?.join(`room-${roomCode}`)
 
-    generateRoom({
+    await generateRoom({
       username: data.username,
       roomCode,
       socketId: socket?.id || ''

@@ -27,7 +27,6 @@ export const initSocket = (app: App) => {
         data,
         cb,
         socket,
-        rooms: app?.io?.sockets?.adapter?.rooms,
         io: app?.io
       })
     })

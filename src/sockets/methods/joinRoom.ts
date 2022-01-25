@@ -2,6 +2,7 @@ import { Server } from 'socket.io'
 import { SocketMethodProps } from '../../interfaces/globlal'
 import { addParticipantToRoom } from '../rooms'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { redisClient } from '../../services/redis'
 import {
   SocketResponse,
   socketOkReponse,
@@ -18,7 +19,6 @@ type JoinRoomResponse = SocketResponse<{
 } | null>
 
 interface JoinRoomAditionaProps {
-  rooms: Map<string, Set<string>> | undefined
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
 }
 
@@ -29,14 +29,17 @@ export const joinRoom = async (
     JoinRoomAditionaProps
   >
 ) => {
-  const { data, cb, socket, rooms, io } = props
+  const { data, cb, socket, io } = props
   try {
-    if (rooms?.size === 0 || !rooms?.has(`room-${data.code}`)) {
+    const room = await redisClient.json.get(data.code)
+
+    if (!room) {
       return cb && cb(socketErrorResponse('Room not found'))
     }
 
     socket?.join(`room-${data.code}`)
-    addParticipantToRoom({
+
+    await addParticipantToRoom({
       username: data.username,
       roomCode: data.code,
       socketId: socket?.id || ''
