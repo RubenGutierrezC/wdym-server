@@ -9,6 +9,7 @@ import { PhraseModel } from '../../components/phrases/phrase-interface'
 import roomRepository from '../../components/rooms/roomRepository'
 import { Participants } from '../../components/rooms/rooms-interface'
 import { initialize, memes, phrases } from '..'
+import { findRoomByCode } from '../rooms'
 
 interface StartGameProps {
   code: string
@@ -25,7 +26,7 @@ export const startGame = async (
   const { data, cb, socket } = props
 
   try {
-    const room = await roomRepository.findOneRoom(data.code)
+    const room = await findRoomByCode(data.code)
     if (room) {
       const master = room.participants.find(
         (p: Participants) => p.username === data.username
