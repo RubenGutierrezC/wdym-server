@@ -40,7 +40,9 @@ export const startGame = async (
         //saca al creador de la sala del arreglo
         participants.splice(participants.indexOf(master), 1)
         //le envia el meme al creador de la sala
-        socket?.to(master.username).emit('deal-meme', { meme: memes.shift() })
+        socket
+          ?.to(`room-${data.code}`)
+          .emit('deal-meme', { meme: memes.shift() })
 
         //reparte 7 cartas a cada participante de la sala de forma aleatoria
         for (let p of room.participants) {
@@ -53,7 +55,9 @@ export const startGame = async (
           }
           console.log(participantCards)
 
-          socket?.to(p.username).emit('deal-cards', { cards: participantCards })
+          console.log(p)
+
+          socket?.to(p.socketId).emit('deal-cards', { cards: participantCards })
         }
 
         cb && cb(socketOkReponse({ roomCode: data.code }))
@@ -66,6 +70,7 @@ export const startGame = async (
       return cb && cb(socketErrorResponse('Room not found'))
     }
   } catch (error) {
+    console.log(error)
     cb && cb(socketErrorResponse(error))
   }
 }
