@@ -10,9 +10,10 @@ import roomRepository from '../../components/rooms/roomRepository'
 import { Participants } from '../../components/rooms/rooms-interface'
 import { initialize, memes, phrases } from '..'
 import { findRoomByCode } from '../rooms'
+import { redisClient } from '../../services/redis'
 
 interface StartGameProps {
-  code: string
+  roomCode: string
   username: string
 }
 
@@ -26,51 +27,58 @@ export const startGame = async (
   const { data, cb, socket } = props
 
   try {
-    const room = await findRoomByCode(data.code)
-    if (room) {
-      const master = room.participants.find(
-        (p: Participants) => p.username === data.username
-      )
+    const room = await findRoomByCode(data.roomCode)
 
-      if (master?.isRoomCreator == true) {
-        //inicializa los arreglos con datos extraidos de la DB
-        await initialize()
-        let participantCards: Array<PhraseModel> = []
-        let participants: Array<Participants> = room.participants
-        //saca al creador de la sala del arreglo
-        participants.splice(participants.indexOf(master), 1)
-        //le envia el meme al creador de la sala
-        socket
-          ?.to(`room-${data.code}`)
-          .emit('deal-meme', { meme: memes.shift() })
-
-        //reparte 7 cartas a cada participante de la sala de forma aleatoria
-        for (let p of room.participants) {
-          for (let _i = 0; _i < 7; _i++) {
-            const random = Math.floor(Math.random() * (phrases.length - 1))
-
-            console.log(phrases.splice(random, 1))
-
-            participantCards.push(phrases.splice(random, 1)[0])
-          }
-          console.log(participantCards)
-
-          console.log(p)
-
-          socket?.to(p.socketId).emit('deal-cards', { cards: participantCards })
-        }
-
-        cb && cb(socketOkReponse({ roomCode: data.code }))
-      } else {
-        return (
-          cb && cb(socketErrorResponse('User not found or not the creator'))
-        )
-      }
-    } else {
-      return cb && cb(socketErrorResponse('Room not found'))
+    if (!room) {
+      return cb?.(socketErrorResponse('Room not found'))
     }
+
+    const master = room.participants.find(
+      (p: Participants) => p.username === data.username
+    )
+
+    if (!master?.isRoomCreator) {
+      return cb?.(socketErrorResponse('User not found or not the creator'))
+    }
+
+    //inicializa los arreglos con datos extraidos de la DB
+    await initialize()
+    // let participantCards: Array<PhraseModel> = []
+    let participants = room.participants
+
+    for (let index in participants) {
+      let participantCards: any[] = []
+      for (let _i = 0; _i < 7; _i++) {
+        const random = Math.floor(Math.random() * (phrases.length - 1))
+        participantCards.push(phrases.splice(random, 1)[0])
+      }
+      room.participants[index].cards = participantCards
+    }
+
+    room['cards'] = phrases
+    room['memes'] = memes
+
+    const randomInitNumber = Math.floor(
+      Math.random() * (room.participants.length - 1)
+    )
+
+    room['judge'] = {
+      username: room.participants[randomInitNumber].username,
+      receivedCards: []
+    }
+
+    room['gameConfig'] = {
+      numberOfRounds: 20,
+      actualRound: 1
+    }
+
+    await redisClient.json.set(`room-${data.roomCode}`, '.', room)
+
+    socket?.to(`room-${data.roomCode}`).emit('start-game')
+
+    return cb?.(socketOkReponse({ roomCode: data.roomCode }))
   } catch (error) {
     console.log(error)
-    cb && cb(socketErrorResponse(error))
+    cb?.(socketErrorResponse(error))
   }
 }

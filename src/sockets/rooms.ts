@@ -23,19 +23,6 @@ export const generateRoom = async ({
       }
     ]
   })
-
-  rooms[roomCode] = {
-    participants: [
-      {
-        username,
-        isRoomCreator: true,
-        numberOfWinnings: 0,
-        socketId: socketId
-      }
-    ]
-  }
-
-  console.log('room generated', rooms)
 }
 
 export const addParticipantToRoom = async ({
@@ -49,15 +36,6 @@ export const addParticipantToRoom = async ({
     numberOfWinnings: 0,
     socketId: socketId
   })
-
-  rooms[roomCode]?.participants.push({
-    username,
-    isRoomCreator: false,
-    numberOfWinnings: 0,
-    socketId: socketId
-  })
-
-  console.log('room join', rooms)
 }
 
 export const findRoomByCode = async (roomCode: string): Promise<any | null> => {

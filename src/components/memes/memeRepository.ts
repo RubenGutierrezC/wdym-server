@@ -13,7 +13,7 @@ const createMeme = async (m: MemeModel) => {
 }
 
 const findMemes = async () => {
-  const data = await memeModel.find()
+  const data = await memeModel.find().limit(100)
 
   return data
 }

@@ -13,7 +13,7 @@ const createPhrase = async (p: PhraseModel) => {
 }
 
 const findPhrases = async () => {
-  const data = await phraseModel.find()
+  const data = await phraseModel.find().limit(100)
 
   return data
 }

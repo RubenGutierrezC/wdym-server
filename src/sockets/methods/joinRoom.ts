@@ -9,7 +9,7 @@ import {
 } from '../socketHelpers'
 
 interface JoinRoomProps {
-  code: string
+  roomCode: string
   username: string
 }
 
@@ -30,32 +30,33 @@ export const joinRoom = async (
 ) => {
   const { data, cb, socket, io } = props
   try {
-    const room = await findRoomByCode(data.code)
+    const room = await findRoomByCode(data.roomCode)
 
     if (!room) {
-      return cb && cb(socketErrorResponse('Room not found'))
+      return cb?.(socketErrorResponse('Room not found'))
     }
 
-    socket?.join(`room-${data.code}`)
+    socket?.join(`room-${data.roomCode}`)
+
+    const { username, roomCode } = data
 
     await addParticipantToRoom({
-      username: data.username,
-      roomCode: data.code,
+      username,
+      roomCode,
       socketId: socket?.id || ''
     })
 
-    io?.to(`room-${data.code}`).emit('participant-joined', {
-      username: data.username
+    io?.to(`room-${data.roomCode}`).emit('participant-joined', {
+      username
     })
 
-    cb &&
-      cb(
-        socketOkReponse({
-          roomCode: data.code
-        })
-      )
+    cb?.(
+      socketOkReponse({
+        roomCode
+      })
+    )
   } catch (error) {
     console.log(error)
-    cb && cb(socketErrorResponse(error))
+    cb?.(socketErrorResponse(error))
   }
 }

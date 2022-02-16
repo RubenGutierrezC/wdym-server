@@ -35,8 +35,8 @@ export const createRoom = async (
       socketId: socket?.id || ''
     })
 
-    cb && cb(socketOkReponse({ roomCode }))
+    cb?.(socketOkReponse({ roomCode }))
   } catch (error) {
-    cb && cb(socketErrorResponse(error))
+    cb?.(socketErrorResponse(error))
   }
 }
