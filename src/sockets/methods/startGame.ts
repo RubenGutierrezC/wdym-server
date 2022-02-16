@@ -67,9 +67,12 @@ export const startGame = async (
       receivedCards: []
     }
 
+    const randomMemeIndex = Math.floor(Math.random() * (memes.length - 1))
+
     room['gameConfig'] = {
-      numberOfRounds: 20,
-      actualRound: 1
+      numberOfRounds: 5,
+      actualRound: 1,
+      meme: memes.splice(randomMemeIndex, 1)[0]
     }
 
     await redisClient.json.set(`room-${data.roomCode}`, '.', room)
