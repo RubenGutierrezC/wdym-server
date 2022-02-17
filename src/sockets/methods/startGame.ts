@@ -59,7 +59,7 @@ export const startGame = async (
     room['memes'] = memes
 
     const randomInitNumber = Math.floor(
-      Math.random() * (room.participants.length - 1)
+      Math.random() * room.participants.length
     )
 
     room['judge'] = {

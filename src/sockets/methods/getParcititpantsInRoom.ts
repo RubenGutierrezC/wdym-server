@@ -29,16 +29,15 @@ export const getParticipantsInRoom = async (
     const room = await findRoomByCode(data.code)
 
     if (!room) {
-      return cb && cb(socketErrorResponse('Room not found'))
+      return cb?.(socketErrorResponse('Room not found'))
     }
 
-    cb &&
-      cb(
-        socketOkReponse({
-          participants: room.participants
-        })
-      )
+    cb?.(
+      socketOkReponse({
+        participants: room.participants
+      })
+    )
   } catch (error) {
-    cb && cb(socketErrorResponse(error))
+    cb?.(socketErrorResponse(error))
   }
 }
