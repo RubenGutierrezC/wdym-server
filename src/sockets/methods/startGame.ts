@@ -1,12 +1,10 @@
-import { Server } from 'socket.io'
 import { SocketMethodProps } from '../../interfaces/globlal'
 import {
   SocketResponse,
   socketOkReponse,
   socketErrorResponse
 } from '../socketHelpers'
-import { PhraseModel } from '../../components/phrases/phrase-interface'
-import roomRepository from '../../components/rooms/roomRepository'
+
 import { Participants } from '../../components/rooms/rooms-interface'
 import { initialize, memes, phrases } from '..'
 import { findRoomByCode } from '../rooms'
@@ -81,7 +79,6 @@ export const startGame = async (
 
     return cb?.(socketOkReponse({ roomCode: data.roomCode }))
   } catch (error) {
-    console.log(error)
     cb?.(socketErrorResponse(error))
   }
 }

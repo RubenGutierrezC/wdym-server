@@ -57,12 +57,6 @@ export const setCard = async (
     const isRoundOver =
       room.judge.receivedCards.length === room.participants.length - 1
 
-    console.log(
-      isRoundOver,
-      room.judge.receivedCards.length,
-      room.participants.length - 1
-    )
-
     if (isRoundOver) {
       // send socket to all partcipants, the judge have to take the winner
       socket

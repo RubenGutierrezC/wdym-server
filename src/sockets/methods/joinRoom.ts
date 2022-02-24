@@ -56,7 +56,6 @@ export const joinRoom = async (
       })
     )
   } catch (error) {
-    console.log(error)
     cb?.(socketErrorResponse(error))
   }
 }
