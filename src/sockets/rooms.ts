@@ -41,3 +41,7 @@ export const addParticipantToRoom = async ({
 export const findRoomByCode = async (roomCode: string): Promise<any | null> => {
   return redisClient.json.get(`room-${roomCode}`)
 }
+
+export const updateRoom = async (roomCode: string, room: any) => {
+  await redisClient.json.set(`room-${roomCode}`, '.', room)
+}

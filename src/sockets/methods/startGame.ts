@@ -7,8 +7,7 @@ import {
 
 import { Participants } from '../../components/rooms/rooms-interface'
 import { initialize, memes, phrases } from '..'
-import { findRoomByCode } from '../rooms'
-import { redisClient } from '../../services/redis'
+import { findRoomByCode, updateRoom } from '../rooms'
 
 interface StartGameProps {
   roomCode: string
@@ -73,7 +72,7 @@ export const startGame = async (
       meme: memes.splice(randomMemeIndex, 1)[0]
     }
 
-    await redisClient.json.set(`room-${data.roomCode}`, '.', room)
+    await updateRoom(data.roomCode, room)
 
     socket?.to(`room-${data.roomCode}`).emit('start-game')
 

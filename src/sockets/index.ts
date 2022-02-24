@@ -9,7 +9,8 @@ import {
   getParticipantsInRoom,
   startGame,
   getRoomInfo,
-  setCard
+  setCard,
+  setWinCard
 } from './methods'
 
 export let memes: Array<MemeModel>
@@ -62,6 +63,14 @@ export const initSocket = (app: App) => {
 
     socket.on('set-card', (data: any, cb: any) => {
       setCard({
+        data,
+        cb,
+        socket
+      })
+    })
+
+    socket.on('set-win-card', (data: any, cb: any) => {
+      setWinCard({
         data,
         cb,
         socket

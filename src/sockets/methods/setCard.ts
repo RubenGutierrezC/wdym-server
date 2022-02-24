@@ -1,6 +1,5 @@
 import { SocketMethodProps } from '../../interfaces/globlal'
-import { findRoomByCode } from '../rooms'
-import { redisClient } from '../../services/redis'
+import { findRoomByCode, updateRoom } from '../rooms'
 import {
   SocketResponse,
   socketOkReponse,
@@ -64,11 +63,12 @@ export const setCard = async (
         .emit('select-card', room.judge?.receivedCards)
     }
 
-    await redisClient.json.set(`room-${data.roomCode}`, '.', room as any)
+    await updateRoom(data.roomCode, room)
 
     return cb?.(
       socketOkReponse({
-        roomCode: data.roomCode
+        roomCode: data.roomCode,
+        selecCard: room.judge?.receivedCards
       })
     )
   } catch (error) {
