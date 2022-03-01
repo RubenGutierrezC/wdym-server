@@ -87,6 +87,8 @@ export const setWinCard = async (
 
     await updateRoom(data.roomCode, room)
 
+    socket?.in(`room-${data.roomCode}`).emit('next-round')
+
     return cb?.(
       socketOkReponse({
         roomCode: data.roomCode

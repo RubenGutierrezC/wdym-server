@@ -59,7 +59,7 @@ export const setCard = async (
     if (isRoundOver) {
       // send socket to all partcipants, the judge have to take the winner
       socket
-        ?.to(`room-${data.roomCode}`)
+        ?.in(`room-${data.roomCode}`)
         .emit('select-card', room.judge?.receivedCards)
     }
 
@@ -68,7 +68,7 @@ export const setCard = async (
     return cb?.(
       socketOkReponse({
         roomCode: data.roomCode,
-        selecCard: room.judge?.receivedCards
+        selecCard: []
       })
     )
   } catch (error) {
