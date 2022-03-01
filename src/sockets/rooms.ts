@@ -45,3 +45,9 @@ export const findRoomByCode = async (roomCode: string): Promise<any | null> => {
 export const updateRoom = async (roomCode: string, room: any) => {
   await redisClient.json.set(`room-${roomCode}`, '.', room)
 }
+
+export const findWinnerUser = (participants: any[] = []) => {
+  const maxWins = Math.max(...participants.map((el) => el.numberOfWinnings))
+  const index = participants.findIndex((el) => el.numberOfWinnings === maxWins)
+  return participants[index]
+}

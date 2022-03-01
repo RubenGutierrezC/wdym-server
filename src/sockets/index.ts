@@ -73,7 +73,8 @@ export const initSocket = (app: App) => {
       setWinCard({
         data,
         cb,
-        socket
+        socket,
+        io: app?.io
       })
     })
   })
