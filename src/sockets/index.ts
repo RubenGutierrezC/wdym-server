@@ -10,7 +10,9 @@ import {
   startGame,
   getRoomInfo,
   setCard,
-  setWinCard
+  setWinCard,
+  disconnect,
+  reconnect
 } from './methods'
 
 export let memes: Array<MemeModel>
@@ -75,6 +77,20 @@ export const initSocket = (app: App) => {
         cb,
         socket,
         io: app?.io
+      })
+    })
+
+    socket.on('reconnect', (data: any, cb) => {
+      reconnect({
+        data,
+        cb,
+        socket
+      })
+    })
+
+    socket.on('disconnect', (reason) => {
+      disconnect({
+        socket
       })
     })
   })
