@@ -1,7 +1,7 @@
 import sharp from 'sharp'
-import path from 'path'
 import { Storage } from '@google-cloud/storage'
 import { nanoid } from 'nanoid'
+import axios from 'axios'
 
 const storage = new Storage({
   projectId: 'wdym-142f1',
@@ -10,85 +10,80 @@ const storage = new Storage({
 
 const bucket = storage.bucket('wdym-142f1.appspot.com')
 
+export const downloadAndResizeImageFromUrl = async (
+  request: any,
+  reply: any,
+  done: any
+) => {
+  try {
+    const photoToDonwload = request.body?.photos[0]
+
+    const { data } = await axios.get(photoToDonwload, {
+      responseType: 'arraybuffer'
+    })
+
+    const file = await sharp(data)
+      .resize(300, 300, {
+        fit: 'fill',
+        withoutEnlargement: true
+      })
+      .toFormat('webp')
+      .toBuffer()
+
+    request.files = [{}]
+
+    request.files[0].mimetype = 'image/webp'
+    request.files[0].buffer = file
+  } catch (error) {
+    reply.send(error)
+  }
+}
+
 export const resizeImages = (request: any, reply: any, done: any) => {
   try {
     const files = request.files || []
 
-    if (files.length > 0) {
-      const file = files[0]
+    if (files.length === 0) return
 
-      sharp(file?.buffer)
-        .resize(300, 300, {
-          fit: 'fill',
-          withoutEnlargement: true
-        })
-        .toFormat('webp')
-        .toBuffer()
-        .then((data) => {
-          request.files[0].mimetype = 'image/webp'
-          request.files[0].buffer = data
-          done()
-        })
-        .catch((error) => {
-          console.log('erro sharp', error)
-          reply.send(error)
-        })
-    } else {
-      done()
-    }
+    const file = files[0]
+
+    sharp(file?.buffer)
+      .resize(300, 300, {
+        fit: 'fill',
+        withoutEnlargement: true
+      })
+      .toFormat('webp')
+      .toBuffer()
+      .then((data) => {
+        request.files[0].mimetype = 'image/webp'
+        request.files[0].buffer = data
+      })
+      .catch((error) => {
+        console.log('erro sharp', error)
+        reply.send(error)
+      })
   } catch (error) {
     reply.send('error')
   }
 }
 
-export const uploadImagesToGCS = async (
-  request: any,
-  reply: any,
-  done: any
-) => {
-  if (request.files?.length === 0) return done()
-
-  let promises = []
+export const uploadImagesToGCS = async (request: any, reply: any) => {
+  if (request.files?.length === 0) return
 
   try {
-    for (const [index, image] of request?.files?.entries()) {
+    for await (const [index, image] of request?.files?.entries()) {
       const gcsname = nanoid() + '.webp'
 
       const file = bucket.file(gcsname)
 
-      const stream = file.createWriteStream({
-        metadata: {
-          contentType: image.mimetype
-        },
-        resumable: false
+      await file.save(image.buffer, {
+        contentType: image.mimetype,
+        public: true
       })
 
-      stream.on('error', (err) => {
-        image.cloudStorageError = err
-        done(err)
-      })
-
-      stream.end(image.buffer)
-
-      promises.push(
-        new Promise((resolve, reject) => {
-          stream.on('finish', () => {
-            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`
-
-            request.files[index].url = publicUrl
-
-            bucket
-              .file(gcsname)
-              .makePublic()
-              .then(() => resolve(''))
-          })
-        })
-      )
+      request.files[index].url = file.publicUrl()
     }
-
-    await Promise.all(promises)
-    done()
   } catch (error) {
-    console.log('error upload', error)
+    reply.send(error)
   }
 }
