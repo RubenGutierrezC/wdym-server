@@ -16,13 +16,14 @@ export const disconnect = async (props: SocketMethodProps) => {
     })
 
     if (!roomCode) {
-      console.log('room code not found on disconnected')
+      // console.log('room code not found on disconnected')
+      return
     }
 
     const room = await findRoomByCode(roomCode)
 
     if (!room) {
-      console.log('room not found on disconnected')
+      // console.log('room not found on disconnected')
       return
     }
 
@@ -31,7 +32,7 @@ export const disconnect = async (props: SocketMethodProps) => {
     )
 
     if (playerDisconnectedIndex === -1) {
-      console.log('player not found on disconnected')
+      // console.log('player not found on disconnected')
       return
     }
 

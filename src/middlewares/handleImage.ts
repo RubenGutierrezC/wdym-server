@@ -2,10 +2,11 @@ import sharp from 'sharp'
 import { Storage } from '@google-cloud/storage'
 import { nanoid } from 'nanoid'
 import axios from 'axios'
+import { FirsebaseStorageCredentials } from '../config'
 
 const storage = new Storage({
   projectId: 'wdym-142f1',
-  keyFilename: './wdym-config.json'
+  credentials: FirsebaseStorageCredentials
 })
 
 const bucket = storage.bucket('wdym-142f1.appspot.com')

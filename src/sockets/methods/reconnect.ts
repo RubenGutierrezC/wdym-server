@@ -21,12 +21,12 @@ export const reconnect = async (
   try {
     const { data, socket, cb } = props
 
-    console.log('reconnect', data)
+    // console.log('reconnect', data)
 
     const room = await findRoomByCode(data.roomCode)
 
     if (!room) {
-      console.log('room not found')
+      // console.log('room not found')
       return cb?.(socketErrorResponse('Room not found'))
     }
 
@@ -35,24 +35,21 @@ export const reconnect = async (
     )
 
     if (participantIndex === -1) {
-      console.log('user not found')
+      // console.log('user not found')
       return cb?.(socketErrorResponse('User not found'))
     }
 
     room.participants[participantIndex].socketId = socket?.id || ''
 
-    console.log(participantIndex, socket)
-
-    console.log('room', room)
-
     await updateRoom(data.roomCode, room)
 
     return cb?.(
       socketOkReponse({
-        roomCode: data.roomCode
+        roomCode: data.roomCode,
+        judge: room.judge
       })
     )
   } catch (error) {
-    console.log('error on reconnect')
+    console.log('error on reconnect', error)
   }
 }
