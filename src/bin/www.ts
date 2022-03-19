@@ -6,7 +6,7 @@ import { redisClient } from '../services/redis'
 
 const startServer = async () => {
   try {
-    await app.listen(PORT)
+    await app.listen(PORT, '0.0.0.0')
     await initMongoDB()
 
     await redisClient.connect()
