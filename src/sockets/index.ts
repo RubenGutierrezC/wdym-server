@@ -1,7 +1,3 @@
-import { MemeModel } from '../components/memes/meme-interface'
-import memeRepository from '../components/memes/memeRepository'
-import { PhraseModel } from '../components/phrases/phrase-interface'
-import phraseRepository from '../components/phrases/phraseRepository'
 import { App, SocketConnected } from '../interfaces/globlal'
 import {
   createRoom,
@@ -14,14 +10,6 @@ import {
   disconnect,
   reconnect
 } from './methods'
-
-export let memes: Array<MemeModel>
-export let phrases: Array<PhraseModel>
-
-export const initialize = async () => {
-  memes = await memeRepository.findMemes()
-  phrases = await phraseRepository.findPhrases()
-}
 
 export const initSocket = (app: App) => {
   app.io?.on('connection', (socket: SocketConnected) => {
@@ -56,13 +44,9 @@ export const initSocket = (app: App) => {
       })
     })
 
-    socket.on('get-room-info', (data: any, cb: any) => {
-      getRoomInfo({
-        data,
-        cb
-      })
-    })
-
+    /**
+     * when player set a card
+     */
     socket.on('set-card', (data: any, cb: any) => {
       setCard({
         data,
@@ -71,12 +55,22 @@ export const initSocket = (app: App) => {
       })
     })
 
+    /**
+     * when judge set a card
+     */
     socket.on('set-win-card', (data: any, cb: any) => {
       setWinCard({
         data,
         cb,
         socket,
         io: app?.io
+      })
+    })
+
+    socket.on('get-room-info', (data: any, cb: any) => {
+      getRoomInfo({
+        data,
+        cb
       })
     })
 

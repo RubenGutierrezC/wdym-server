@@ -32,6 +32,7 @@ const findMemeById = async (id: ObjectId) => {
 
 const memeRepository = {
   createMeme,
+  findApprovedMemes,
   findMemes,
   findMemeById
 }

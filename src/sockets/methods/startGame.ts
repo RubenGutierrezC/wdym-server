@@ -6,8 +6,7 @@ import {
 } from '../socketHelpers'
 
 import { Participants } from '../../components/rooms/rooms-interface'
-import { initialize, memes, phrases } from '..'
-import { findRoomByCode, updateRoom } from '../rooms'
+import { findRoomByCode, updateRoom, getCardsAndMemes } from '../rooms'
 
 interface StartGameProps {
   roomCode: string
@@ -39,7 +38,7 @@ export const startGame = async (
     }
 
     //inicializa los arreglos con datos extraidos de la DB
-    await initialize()
+    const { memes, phrases } = await getCardsAndMemes()
     // let participantCards: Array<PhraseModel> = []
     let participants = room.participants
 

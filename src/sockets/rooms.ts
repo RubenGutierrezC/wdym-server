@@ -1,4 +1,6 @@
 import { redisClient } from '../services/redis'
+import phraseRepository from '../components/phrases/phraseRepository'
+import memeRepository from '../components/memes/memeRepository'
 export const rooms: { [key: string]: any } = {}
 
 // TODO: change interface name
@@ -50,4 +52,16 @@ export const findWinnerUser = (participants: any[] = []) => {
   const maxWins = Math.max(...participants.map((el) => el.numberOfWinnings))
   const index = participants.findIndex((el) => el.numberOfWinnings === maxWins)
   return participants[index]
+}
+
+export const getCardsAndMemes = async () => {
+  const [phrases, memes] = await Promise.allSettled([
+    phraseRepository.findApprovedPhrases(),
+    memeRepository.findApprovedMemes()
+  ])
+
+  return {
+    phrases: phrases.status === 'fulfilled' ? phrases.value : [],
+    memes: memes.status === 'fulfilled' ? memes.value : []
+  }
 }
