@@ -1,16 +1,14 @@
-import mongoose from 'mongoose'
+import { model, Schema } from 'mongoose'
 import { MemeModel } from './meme-interface'
-
-const { model, Schema } = mongoose
 
 const MemeSchema = new Schema<MemeModel>({
   img: {
     type: String,
     required: true
   },
-  status: {
+  isApproved: {
     type: Boolean,
-    default: true
+    default: false
   }
 })
 

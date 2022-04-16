@@ -8,6 +8,8 @@ const phraseRoutes = (app: App, _: any, done: any) => {
 
   app.get('/:id', phraseController.getOnePhrase)
 
+  app.delete('/', phraseController.deleteAllPhrases)
+
   done()
 }
 

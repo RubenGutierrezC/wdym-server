@@ -1,4 +1,5 @@
 export interface PhraseModel {
   phrase: String
-  status: Boolean
+  language?: 'es' | 'en'
+  isApproved?: Boolean
 }

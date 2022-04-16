@@ -8,15 +8,13 @@ const postPhrase = async (req: any, reply: any) => {
 
       phrases.forEach(async (p: string) => {
         const thePhrase: PhraseModel = {
-          phrase: p,
-          status: true
+          phrase: p
         }
         await phraseRepository.createPhrase(thePhrase)
       })
     } else if (typeof req.body.phrases === 'string') {
       const thePhrase: PhraseModel = {
-        phrase: req.body.phrases,
-        status: true
+        phrase: req.body.phrases
       }
       await phraseRepository.createPhrase(thePhrase)
     }
@@ -47,9 +45,20 @@ const getOnePhrase = async (req: any, reply: any) => {
   }
 }
 
+const deleteAllPhrases = async (_req: any, reply: any) => {
+  try {
+    const data = await phraseRepository.deleteAllPhrases()
+
+    reply.code(200).send(data)
+  } catch (error) {
+    reply.send(error)
+  }
+}
+
 const phraseController = {
   postPhrase,
   getOnePhrase,
-  getPhrases
+  getPhrases,
+  deleteAllPhrases
 }
 export default phraseController

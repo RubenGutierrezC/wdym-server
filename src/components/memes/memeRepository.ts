@@ -12,6 +12,12 @@ const createMeme = async (m: MemeModel) => {
   return data.save()
 }
 
+const findApprovedMemes = async () => {
+  const data = await memeModel.find({ isApproved: true }).limit(100)
+
+  return data
+}
+
 const findMemes = async () => {
   const data = await memeModel.find().limit(100)
 

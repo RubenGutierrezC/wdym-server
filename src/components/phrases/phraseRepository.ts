@@ -12,6 +12,12 @@ const createPhrase = async (p: PhraseModel) => {
   return data.save()
 }
 
+const findApprovedPhrases = async () => {
+  const data = await phraseModel.find({ isApproved: true }).limit(100)
+
+  return data
+}
+
 const findPhrases = async () => {
   const data = await phraseModel.find().limit(100)
 
@@ -24,10 +30,16 @@ const findPhraseById = async (id: ObjectId) => {
   return data
 }
 
+const deleteAllPhrases = async () => {
+  return await phraseModel.deleteMany()
+}
+
 const phraseRepository = {
   createPhrase,
+  findApprovedPhrases,
   findPhraseById,
-  findPhrases
+  findPhrases,
+  deleteAllPhrases
 }
 
 export default phraseRepository

@@ -37,6 +37,7 @@ export const createRoom = async (
 
     cb?.(socketOkReponse({ roomCode }))
   } catch (error) {
+    console.log(error)
     cb?.(socketErrorResponse(error))
   }
 }

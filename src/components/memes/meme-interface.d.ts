@@ -1,4 +1,4 @@
 export interface MemeModel {
   img: string
-  status: boolean
+  isApproved?: boolean
 }

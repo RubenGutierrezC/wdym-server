@@ -6,11 +6,8 @@ const postMeme = async (req: any, reply: any) => {
     if (req.files.length > 0) {
       let meme = Array.from(req.files, (item: any) => item.url)
 
-      meme.forEach(async (m: string) => {
-        const elmeme: MemeModel = {
-          img: m,
-          status: true
-        }
+      meme.forEach(async (img: string) => {
+        const elmeme: MemeModel = { img }
         await memeRepository.createMeme(elmeme)
       })
 

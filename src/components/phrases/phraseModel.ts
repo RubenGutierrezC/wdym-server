@@ -1,16 +1,19 @@
-import mongoose from 'mongoose'
+import { model, Schema } from 'mongoose'
 import { PhraseModel } from './phrase-interface'
-
-const { model, Schema } = mongoose
 
 const PhraseSchema = new Schema<PhraseModel>({
   phrase: {
     type: String,
     required: true
   },
-  status: {
+  language: {
+    type: String,
+    default: 'es',
+    enum: ['es', 'en']
+  },
+  isApproved: {
     type: Boolean,
-    default: true
+    default: false
   }
 })
 
